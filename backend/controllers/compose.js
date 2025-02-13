@@ -16,7 +16,7 @@ composeRouter.post("/", async (request, response) => {
   const trackingId = uuidv4();
   try {
     const tracker = await client.tracker.create({
-      data: { trackingId, recipient, subject, body, userId, status:'sent' },
+      data: { trackingId, recipient, subject, body, userId, status: "sent" },
     });
     const trackingPixelUrl = `https://pixel-tracker-bypd.onrender.com/track?trackingId=${trackingId}`;
     const emailBody = `${body}<br/><img src="${trackingPixelUrl}" width="1" height="1" style="display:none;" />`;
@@ -47,4 +47,4 @@ composeRouter.post("/", async (request, response) => {
   }
 });
 
-export default composeRouter
+export default composeRouter;

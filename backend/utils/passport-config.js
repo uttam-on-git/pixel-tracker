@@ -1,13 +1,12 @@
-import 'dotenv/config';
+import "dotenv/config";
 import passport from "passport";
 import { Strategy as LocalStrategy } from "passport-local";
 import { Strategy as GoogleStrategy } from "passport-google-oauth20";
 import bcrypt from "bcrypt";
 import client from "../client.js";
-import config from "./config.js"
+import config from "./config.js";
 
 console.log("Using Google OAuth Redirect URI:", config.callBackURL);
-
 
 passport.use(
   new LocalStrategy(
@@ -53,9 +52,9 @@ passport.use(
           where: { googleId: profile.id },
         });
         if (!user) {
-           user = await client.user.upsert({
-            where: { email: profile.emails[0].value },  
-            update: {},  
+          user = await client.user.upsert({
+            where: { email: profile.emails[0].value },
+            update: {},
             create: {
               email: profile.emails[0].value,
               username: profile.displayName,
@@ -84,4 +83,3 @@ passport.deserializeUser(async (id, done) => {
 });
 
 export default passport;
-

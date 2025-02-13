@@ -13,4 +13,4 @@ trackerRouter.get("/", async (request, response) => {
   }
 });
 
-export default trackerRouter
+export default trackerRouter;

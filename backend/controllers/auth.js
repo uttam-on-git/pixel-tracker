@@ -1,7 +1,7 @@
-import express from "express"
+import express from "express";
 const authRouter = express.Router();
 import bcrypt from "bcrypt";
-import passport from "../utils/passport-config.js"
+import passport from "../utils/passport-config.js";
 import client from "../client.js";
 import config from "../utils/config.js";
 
@@ -33,7 +33,10 @@ authRouter.get("/session", (request, response) => {
   }
 });
 
-authRouter.post("/login", passport.authenticate("local"),(request, response) => {
+authRouter.post(
+  "/login",
+  passport.authenticate("local"),
+  (request, response) => {
     response.json({
       message: "Loged in Successfully",
       user: request.user,
@@ -41,14 +44,18 @@ authRouter.post("/login", passport.authenticate("local"),(request, response) => 
   }
 );
 
-authRouter.get("/google",passport.authenticate("google", { scope: ["profile", "email"] })
+authRouter.get(
+  "/google",
+  passport.authenticate("google", { scope: ["profile", "email"] })
 );
 
-authRouter.get("/google/callback",passport.authenticate("google",{ failureRedirect: config.FRONTEND_URL}),
-    (request, response) => {
-      response.redirect(config.FRONTEND_URL);
-    }
-  );
+authRouter.get(
+  "/google/callback",
+  passport.authenticate("google", { failureRedirect: config.FRONTEND_URL }),
+  (request, response) => {
+    response.redirect(config.FRONTEND_URL);
+  }
+);
 
 authRouter.get("/logout", (request, response, next) => {
   request.logout((err) => {
@@ -57,4 +64,4 @@ authRouter.get("/logout", (request, response, next) => {
   });
 });
 
-export default authRouter
+export default authRouter;
