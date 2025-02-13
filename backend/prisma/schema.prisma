@@ -42,4 +42,5 @@ model Session {
   sid      String  @id
   sess     Json
   expire   DateTime
+  @@map("session")
 }

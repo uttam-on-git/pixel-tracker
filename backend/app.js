@@ -30,7 +30,12 @@ app.use(express.json());
 app.use(cookieParser());
 app.use(
   session({
-    store: new PGStore({ pool}),
+    store: new PGStore({
+      conObject: {
+        connectionString: config.DATABASE_URI
+      },
+      tableName: 'session'
+    }),
     secret: config.SESSIONSECRET,
     resave: false,
     saveUninitialized: false,
