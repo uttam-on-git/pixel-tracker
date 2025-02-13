@@ -67,7 +67,7 @@ app.get("/track", async (request, response) => {
     console.log("tracker found");
     if (tracker.status !== "seen") {
       const updatedTracker = await client.tracker.update({
-        where: { id: trackingId },
+        where: { trackingId },
         data: { status: "seen", seenAt: new Date() },
       });
       console.log("tracker updated: ", updatedTracker);
