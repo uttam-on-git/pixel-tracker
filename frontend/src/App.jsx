@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   BrowserRouter as Router,
   Routes,
@@ -14,30 +14,37 @@ import ComposeEmail from "./components/ComposeEmail";
 function App() {
   const [user, setUser] = useState(null);
 
+  useEffect(()=> {
+    fetch("http://localhost:3001/auth/session",  {
+      credentials: "include",
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.user) setUser(data.user);
+      })
+      .catch((error) => console.log(error));
+  }, [])
+
   return (
     <Router>
-      <nav>
-        <Link to="/">Dashboard</Link>
+      <nav style={{ padding: '10px', borderBottom: '1px solid #ccc' }}>
+        <Link to="/">Dashboard</Link> | {' '}
         {user ? (
           <>
-            <span> Welcome {user.username}</span>
+            <span style={{ marginLeft: '10px' }}> Welcome {user.username}</span>
             <button
+              style={{ marginLeft: '10px' }}
               onClick={() => {
-                fetch("http://localhost:3001/auth/logout", {
-                  credentials: "include",
-                })
+                fetch("http://localhost:3001/auth/logout", {credentials: "include"})
                   .then(() => setUser(null))
                   .catch((error) => {
                     console.log(error);
                   });
-              }}
-            >
-              LogOut
-            </button>
+              }}>Logout</button>
           </>
         ) : (
           <>
-            <Link to="/login">Login</Link>
+            <Link to="/login">Login</Link> | {' '}
             <Link to="/register">Register</Link>
           </>
         )}

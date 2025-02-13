@@ -1,6 +1,6 @@
 import config from "./utils/config.js";
 import app from './app.js'
-import client from "./prisma.js";
+import client from "./client.js";
 
 const checkDbConnection = async () => {
     try {

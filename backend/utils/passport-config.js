@@ -1,8 +1,12 @@
 import passport from "passport";
-import LocalStrategy from "passport-local";
-import GoogleStrategy from "passport-google-oauth20";
+import { Strategy as LocalStrategy } from "passport-local";
+import { Strategy as GoogleStrategy } from "passport-google-oauth20";
 import bcrypt from "bcrypt";
-import client from "../prisma.js";
+import client from "../client.js";
+import config from "./config.js"
+
+console.log("Using Google OAuth Redirect URI:", config.callBackURL);
+
 
 passport.use(
   new LocalStrategy(
@@ -38,9 +42,9 @@ passport.use(
 passport.use(
   new GoogleStrategy(
     {
-      clientID: "GOOGLE_CLIENT_ID",
-      clientSecret: "GOOGLE_CLIENT_SECRET",
-      callbackURL: "/auth/google/callback",
+      clientID: config.clientId,
+      clientSecret: config.clientSecret,
+      callbackURL: config.callBackURL,
     },
     async (accessToken, refreshToken, profile, done) => {
       try {
@@ -69,9 +73,12 @@ passport.serializeUser((user, done) => {
 });
 passport.deserializeUser(async (id, done) => {
   try {
-    const user = await prisma.user.findUnique({ where: { id } });
+    const user = await client.user.findUnique({ where: { id } });
     done(null, user);
   } catch (error) {
     done(error, null);
   }
 });
+
+export default passport;
+

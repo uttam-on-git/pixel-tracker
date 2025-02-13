@@ -3,7 +3,7 @@ import { useState } from "react";
 const ComposeEmail = () => {
   const [recipient, setRecipient] = useState("");
   const [subject, setSubject] = useState("");
-  const [body, setBody] = useEffect("");
+  const [body, setBody] = useState("");
   const [message, setMessage] = useState("");
 
   const handleCompose = (e) => {

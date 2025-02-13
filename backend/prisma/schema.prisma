@@ -17,7 +17,7 @@ model User {
   id        Int       @id @default(autoincrement())
   username  String    @unique
   email     String    @unique
-  password  String?   @unique
+  password  String? 
   googleId  String?   @unique
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
@@ -34,6 +34,6 @@ model Tracker {
   seenAt     DateTime?
   createdAt  DateTime  @default(now())
   updatedAt  DateTime  @updatedAt
-  use        User?     @relation(fields: [userId], references: [id])
+  user        User?     @relation(fields: [userId], references: [id])
   userId     Int?
 }

@@ -58,7 +58,7 @@ const Login = ({ setUser }) => {
         </div>
         <button type="submit">Login</button>
       </form>
-      <hr />
+      <hr/>
       <button onClick={handleGoogleLogin}>Login with Google</button>
     </div>
   );

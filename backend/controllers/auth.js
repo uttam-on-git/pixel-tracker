@@ -1,8 +1,8 @@
-import express, { request, response } from "express";
+import express from "express"
 const authRouter = express.Router();
 import bcrypt from "bcrypt";
-import passport from "passport";
-import client from "../prisma.js";
+import passport from "../utils/passport-config.js"
+import client from "../client.js";
 
 authRouter.post("/register", async (request, response) => {
   const { username, password, email } = request.body;
@@ -18,16 +18,21 @@ authRouter.post("/register", async (request, response) => {
     const user = await client.user.create({
       data: { username, email, password: hashedPassword },
     });
-    res.json({ message: "User registered successfully", user });
+    response.json({ message: "User registered successfully", user });
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    response.status(500).json({ error: error.message });
   }
 });
 
-authRouter.post(
-  "/login",
-  passport.authenticate("local"),
-  (request, response) => {
+authRouter.get("/session", (request, response) => {
+  if (request.isAuthenticated()) {
+    response.json({ user: request.user });
+  } else {
+    response.status(401).json({ error: "Not authenticated" });
+  }
+});
+
+authRouter.post("/login", passport.authenticate("local"),(request, response) => {
     response.json({
       message: "Loged in Successfully",
       user: request.user,
@@ -35,27 +40,18 @@ authRouter.post(
   }
 );
 
-authRouter.get(
-  "/google",
-  passport.authenticate("google", { scope: ["profile", "email"] })
+authRouter.get("/google",passport.authenticate("google", { scope: ["profile", "email"] })
 );
 
-authRouter.get(
-  "google/callback",
-  passport.authenticate(
-    "google",
-    {
-      failureRedirect: "http://localhost:3000/login",
-    },
+authRouter.get("/google/callback",passport.authenticate("google",{ failureRedirect: "http://localhost:5173/login"}),
     (request, response) => {
-      response.redirect("http://localhost:3000");
+      response.redirect("http://localhost:5173");
     }
-  )
-);
+  );
 
-authRouter.get("/logout", (request, response) => {
+authRouter.get("/logout", (request, response, next) => {
   request.logout((err) => {
-    if (err) return response.status(500).json({ error: "Logout error" });
+    if (err) return next(err);
     response.json({ message: "Logged out successfully" });
   });
 });
