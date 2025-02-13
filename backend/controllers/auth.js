@@ -3,6 +3,7 @@ const authRouter = express.Router();
 import bcrypt from "bcrypt";
 import passport from "../utils/passport-config.js"
 import client from "../client.js";
+import config from "../utils/config.js";
 
 authRouter.post("/register", async (request, response) => {
   const { username, password, email } = request.body;
@@ -43,9 +44,9 @@ authRouter.post("/login", passport.authenticate("local"),(request, response) => 
 authRouter.get("/google",passport.authenticate("google", { scope: ["profile", "email"] })
 );
 
-authRouter.get("/google/callback",passport.authenticate("google",{ failureRedirect: "http://localhost:5173/login"}),
+authRouter.get("/google/callback",passport.authenticate("google",{ failureRedirect: config.FRONTEND_URL}),
     (request, response) => {
-      response.redirect("http://localhost:5173/");
+      response.redirect(config.FRONTEND_URL);
     }
   );
 
