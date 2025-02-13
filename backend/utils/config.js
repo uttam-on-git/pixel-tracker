@@ -8,6 +8,7 @@ const clientId = process.env.GOOGLE_CLIENT_ID
 const clientSecret = process.env.GOOGLE_CLIENT_SECRET
 const callBackURL = process.env.GOOGLE_CALLBACK_URL
 const DATABASE_URI = process.env.DATABASE_URL
+const FRONTEND_URL = process.env.FRONTEND_URL
 
 export default {
   PORT,
@@ -17,5 +18,6 @@ export default {
   clientId,
   clientSecret,
   callBackURL,
-  DATABASE_URI
+  DATABASE_URI, 
+  FRONTEND_URL
 };
