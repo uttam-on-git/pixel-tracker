@@ -1,17 +1,26 @@
-import 'dotenv/config'
-import config from './utils/config.js'
+import "dotenv/config";
+import config from "./utils/config.js";
 import express from "express";
 const app = express();
 import cors from "cors";
 import session from "express-session";
-import cookieParser from 'cookie-parser';
-import passport from "./utils/passport-config.js"
+import pgSession from "connect-pg-simple";
+import { Pool } from "pg";
+import cookieParser from "cookie-parser";
+import passport from "./utils/passport-config.js";
 import client from "./client.js";
 import trackerRouter from "./controllers/tracker.js";
 import composeRouter from "./controllers/compose.js";
 import authRouter from "./controllers/auth.js";
 
-app.use(cors({
+const PGStore = pgSession(session)
+const pool = new Pool({
+  connectionString: config.DATABASE_URI,
+  ssl: { rejectUnauthorized: false}
+})
+
+app.use(
+  cors({
     origin: "http://localhost:5173",
     credentials: true,
   })
@@ -20,9 +29,11 @@ app.use(express.json());
 app.use(cookieParser());
 app.use(
   session({
+    store: new PGStore({ pool}),
     secret: config.SESSIONSECRET,
     resave: false,
     saveUninitialized: false,
+    cookie: { secure: true, httpOnly: true, maxAge: 24 * 60 * 60 * 1000 },
   })
 );
 app.use(passport.initialize());
@@ -34,26 +45,26 @@ app.use("/auth", authRouter);
 
 app.get("/track", async (request, response) => {
   const { trackingId } = request.query;
-  if (!trackingId){
-    console.error('no trackingId provided')
+  if (!trackingId) {
+    console.error("no trackingId provided");
     return response.status(400).json({ error: "No trackingId provided" });
   }
   try {
-    console.log('recieved tracking request for id: ', trackingId)
+    console.log("recieved tracking request for id: ", trackingId);
     const tracker = await client.tracker.findUnique({
-      where: { trackingId}
-    })
+      where: { trackingId },
+    });
     if (!tracker) {
-      console.log('tracker not found')
-      return response.status(404).json({ error: "Tracker not found" })
+      console.log("tracker not found");
+      return response.status(404).json({ error: "Tracker not found" });
     }
-    console.log('tracker found')
-    if(tracker.status !== 'seen'){
+    console.log("tracker found");
+    if (tracker.status !== "seen") {
       const updatedTracker = await client.tracker.update({
         where: trackingId,
-        data: { status: 'seen', seenAt: new Date() }
-      })
-      console.log('tracker updated: ', updatedTracker)
+        data: { status: "seen", seenAt: new Date() },
+      });
+      console.log("tracker updated: ", updatedTracker);
     }
 
     const imgBuffer = Buffer.from(
@@ -71,4 +82,4 @@ app.get("/track", async (request, response) => {
   }
 });
 
-export default app
+export default app;
