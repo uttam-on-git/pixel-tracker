@@ -45,7 +45,7 @@ authRouter.get("/google",passport.authenticate("google", { scope: ["profile", "e
 
 authRouter.get("/google/callback",passport.authenticate("google",{ failureRedirect: "http://localhost:5173/login"}),
     (request, response) => {
-      response.redirect("http://localhost:5173");
+      response.redirect("http://localhost:5173/");
     }
   );
 

@@ -18,7 +18,7 @@ composeRouter.post("/", async (request, response) => {
     const tracker = await client.tracker.create({
       data: { trackingId, recipient, subject, body, userId, status:'sent' },
     });
-    const trackingPixelUrl = `http://localhost:${config.PORT}/track?trackingId=${trackingId}`;
+    const trackingPixelUrl = `https://pixel-tracker-bypd.onrender.com/track?trackingId=${trackingId}`;
     const emailBody = `${body}<br/><img src="${trackingPixelUrl}" width="1" height="1" style="display:none;" />`;
     const transporter = nodemailer.createTransport({
       service: "gmail",

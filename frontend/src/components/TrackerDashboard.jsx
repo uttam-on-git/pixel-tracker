@@ -4,7 +4,7 @@ const TrackerDashboard = () => {
   const [trackers, setTrackers] = useState([]);
 
   const fetchTrackers = () => {
-    fetch("http://localhost:3001/tracker", { credentials: "include" })
+    fetch("https://pixel-tracker-bypd.onrender.com/tracker", { credentials: "include" })
       .then((res) => res.json())
       .then((data) => setTrackers(data))
       .catch((err) => console.error("Error fetching trackers:", err));

@@ -7,7 +7,7 @@ const Register = ({ setUser }) => {
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
 
-  const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:3001";
+  const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "https://pixel-tracker-bypd.onrender.com";
 
   const handleRegister = (e) => {
     e.preventDefault();

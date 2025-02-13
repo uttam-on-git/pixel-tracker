@@ -53,11 +53,13 @@ passport.use(
           where: { googleId: profile.id },
         });
         if (!user) {
-          user = await client.user.create({
-            data: {
-              googleId: profile.id,
-              username: profile.displayName,
+           user = await client.user.upsert({
+            where: { email: profile.emails[0].value },  
+            update: {},  
+            create: {
               email: profile.emails[0].value,
+              username: profile.displayName,
+              googleId: profile.id,
             },
           });
         }

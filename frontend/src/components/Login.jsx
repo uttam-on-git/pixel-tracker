@@ -9,7 +9,7 @@ const Login = ({ setUser }) => {
   const handleLogin = (e) => {
     e.preventDefault();
 
-    fetch("http://localhost:3001/auth/login", {
+    fetch("https://pixel-tracker-bypd.onrender.com/auth/login", {
       method: "POST",
       credentials: "include",
       headers: { "Content-Type": "application/json" },
@@ -31,7 +31,7 @@ const Login = ({ setUser }) => {
   };
 
   const handleGoogleLogin = () => {
-    window.location.href = "http://localhost:3001/auth/google";
+    window.location.href = "https://pixel-tracker-bypd.onrender.com/auth/google";
   };
 
   return (

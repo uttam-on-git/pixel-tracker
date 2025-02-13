@@ -8,7 +8,7 @@ const ComposeEmail = () => {
 
   const handleCompose = (e) => {
     e.preventDefault();
-    fetch("http://localhost:3001/compose", {
+    fetch("https://pixel-tracker-bypd.onrender.com/compose", {
       method: "POST",
       credentials: "include",
       headers: {

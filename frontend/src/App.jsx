@@ -15,7 +15,7 @@ function App() {
   const [user, setUser] = useState(null);
 
   useEffect(()=> {
-    fetch("http://localhost:3001/auth/session",  {
+    fetch("https://pixel-tracker-bypd.onrender.com/auth/session",  {
       credentials: "include",
     })
       .then((res) => res.json())
@@ -35,7 +35,7 @@ function App() {
             <button
               style={{ marginLeft: '10px' }}
               onClick={() => {
-                fetch("http://localhost:3001/auth/logout", {credentials: "include"})
+                fetch("https://pixel-tracker-bypd.onrender.com/auth/logout", {credentials: "include"})
                   .then(() => setUser(null))
                   .catch((error) => {
                     console.log(error);
