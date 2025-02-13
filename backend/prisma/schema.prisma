@@ -37,3 +37,9 @@ model Tracker {
   user        User?     @relation(fields: [userId], references: [id])
   userId     Int?
 }
+
+model Session {
+  sid      String  @id
+  sess     Json
+  expire   DateTime
+}
