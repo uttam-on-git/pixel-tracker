@@ -4,6 +4,13 @@ import bcrypt from "bcrypt";
 import passport from "../utils/passport-config.js";
 import client from "../client.js";
 import config from "../utils/config.js";
+import { google } from "googleapis";
+
+const oAuth2Client = new google.auth.OAuth2(
+  config.clientId,
+  config.clientSecret,
+  config.callBackURL
+)
 
 authRouter.post("/register", async (request, response) => {
   const { username, password, email } = request.body;
@@ -44,16 +51,36 @@ authRouter.post(
   }
 );
 
-authRouter.get(
-  "/google",
-  passport.authenticate("google", { scope: ["profile", "email"] })
+authRouter.get("/google", passport.authenticate("google", { 
+  scope: ["profile", "email", "https://www.googleapis.com/auth/gmail.send"],
+  accessType: "offline",
+  prompt: "consent"
+})
 );
 
 authRouter.get(
   "/google/callback",
   passport.authenticate("google", { failureRedirect: config.FRONTEND_URL }),
-  (request, response) => {
-    response.redirect(config.FRONTEND_URL);
+   async (request, response) => {
+    const { id, displayName, emails } = request.user;
+    const email = emails[0].value
+    const tokens = request.authInfo
+
+    await client.user.upsert({
+      where: { googleId: id },
+      update: {
+        accessToken: tokens.accessToken,
+        refreshToken: tokens.refreshToken
+      },
+      create: {
+        username: displayName,
+        email: email,
+        googleId: id,
+        accessToken: tokens.accessToken,
+        refreshToken: tokens.refreshToken
+      },
+    });
+    response.redirect('/dashboard')
   }
 );
 

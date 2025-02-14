@@ -1,10 +1,11 @@
 import { useState, useEffect } from "react";
+import API_BASE_URL from "../config";
 
 const TrackerDashboard = () => {
   const [trackers, setTrackers] = useState([]);
 
   const fetchTrackers = () => {
-    fetch("https://pixel-tracker-bypd.onrender.com/tracker", { credentials: "include" })
+    fetch(`${API_BASE_URL}/tracker`, { credentials: "include" })
       .then((res) => res.json())
       .then((data) => setTrackers(data))
       .catch((err) => console.error("Error fetching trackers:", err));

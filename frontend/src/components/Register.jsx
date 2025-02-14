@@ -1,41 +1,40 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import API_BASE_URL from "../config.js";
 
 const Register = ({ setUser }) => {
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [error, setError] = useState("")
   const navigate = useNavigate();
 
-  const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "https://pixel-tracker-bypd.onrender.com";
-
-  const handleRegister = (e) => {
+  const handleRegister = async (e) => {
     e.preventDefault();
+    setError("")
 
-    fetch(`${API_BASE_URL}/auth/register`, {
-      method: "POST",
-      credentials: "include",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ username, email, password }),
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        if (data.error) {
-          alert(data.error);
-        } else {
-          setUser(data.user);
-          navigate("/");
-        }
+    try {
+      const response = await fetch(`${API_BASE_URL}/auth/register`, {
+        method: "POST",
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ username, email, password }),
       })
-      .catch((err) => {
-        console.error("Registration error:", err);
-        alert("Registration error");
-      });
+      const data = await response.json()
+      if(!response.ok){
+        throw new Error(data.error || 'Registration failed')
+      }
+      setUser(data.user);
+      navigate("/");
+    } catch (error) {
+      setError(error.message)
+    }
   };
 
   return (
     <div>
       <h2>Register</h2>
+      {error && <p style={{ color: "red" }}>{error}</p>}
       <form onSubmit={handleRegister}>
         <div>
           <label>Username: </label>

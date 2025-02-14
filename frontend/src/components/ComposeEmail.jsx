@@ -1,4 +1,5 @@
 import { useState } from "react";
+import API_BASE_URL from "../config";
 
 const ComposeEmail = () => {
   const [recipient, setRecipient] = useState("");
@@ -8,7 +9,7 @@ const ComposeEmail = () => {
 
   const handleCompose = (e) => {
     e.preventDefault();
-    fetch("https://pixel-tracker-bypd.onrender.com/compose", {
+    fetch(`${API_BASE_URL}/compose`, {
       method: "POST",
       credentials: "include",
       headers: {

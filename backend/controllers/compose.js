@@ -6,19 +6,13 @@ import nodemailer from "nodemailer";
 import config from "../utils/config.js";
 import { google } from "googleapis";
 
-const oAuth2Client = new google.auth.OAuth2(
-  (config.clientId, config.clientSecret, config.callBackURL)
-);
-
-oAuth2Client.setCredentials({
-  refresh_token: config.REFRESH_TOKEN,
-});
-
 composeRouter.post("/", async (request, response) => {
   const { recipient, subject, body } = request.body;
   const user = request.user;
-  if (!user.email || !user) {
-    return response.status(400).json({ error: "User not authenticated" });
+  if (!user.email || !user || !user.accessToken || !user.refreshToken) {
+    return response
+      .status(400)
+      .json({ error: "User not authenticated or Gmail not linked" });
   }
   if (!recipient || !subject || !body) {
     return response
@@ -39,6 +33,14 @@ composeRouter.post("/", async (request, response) => {
     });
     const trackingPixelUrl = `https://pixel-tracker-bypd.onrender.com/track?trackingId=${trackingId}`;
     const emailBody = `${body}<br/><img src="${trackingPixelUrl}" width="1" height="1" style="display:none;" />`;
+
+    const oAuth2Client = new google.auth.OAuth2(
+      (config.clientId, config.clientSecret, config.callBackURL)
+    );
+
+    oAuth2Client.setCredentials({
+      refresh_token: user.refreshToken,
+    });
 
     const accessToken = await oAuth2Client.getAccessToken();
     const transporter = nodemailer.createTransport({
