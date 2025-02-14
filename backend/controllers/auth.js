@@ -65,9 +65,9 @@ authRouter.get("/google", (request, response, next) => {
 
 authRouter.get(
   "/google/callback",
-  passport.authenticate("google", { failureRedirect: config.FRONTEND_URL }),
+  passport.authenticate("google", { failureRedirect: `${config.FRONTEND_URL}/login` }),
    async (request, response) => {
-    response.redirect('/dashboard')
+    response.redirect(config.FRONTEND_URL)
   }
 );
 
