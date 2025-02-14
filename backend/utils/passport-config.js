@@ -46,11 +46,16 @@ passport.use(
       clientSecret: config.clientSecret,
       callbackURL: config.callBackURL,
       passReqToCallback: true,
+      scope: ["profile", "email"],
     },
     async (request, accessToken, refreshToken, profile, done) => {
       console.log("Google Profile:", profile); 
       if (!profile.emails || profile.emails.length === 0) {
         return done(new Error("No email found in Google profile"));
+      }
+      const email = profile.emails[0]?.value;
+      if (!email) {
+        return done(new Error("Email field is missing"));
       }
       try {
         let user = await client.user.findUnique({
@@ -61,8 +66,8 @@ passport.use(
             where: { email: profile.emails[0].value },
             update: { refreshToken },
             create: {
-              email: profile.emails[0].value,
-              username: profile.displayName,
+              email,
+              username: profile.displayName || profile.name?.givenName || "User",
               googleId: profile.id,
               refreshToken
             },
