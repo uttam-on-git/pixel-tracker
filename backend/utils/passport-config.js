@@ -44,11 +44,12 @@ passport.use(
     {
       clientID: config.clientId,
       clientSecret: config.clientSecret,
-      callbackURL: config.callBackURL,
+      callbackURL: config.callbackURL,
       passReqToCallback: true,
       scope: ["profile", "email"],
     },
     async (request, accessToken, refreshToken, profile, done) => {
+      console.log(config.callbackURL)
       console.log("Google Profile:", profile); 
       if (!profile.emails || profile.emails.length === 0) {
         return done(new Error("No email found in Google profile"));

@@ -4,13 +4,6 @@ import bcrypt from "bcrypt";
 import passport from "../utils/passport-config.js";
 import client from "../client.js";
 import config from "../utils/config.js";
-import { google } from "googleapis";
-
-const oAuth2Client = new google.auth.OAuth2(
-  config.clientId,
-  config.clientSecret,
-  config.callBackURL
-)
 
 authRouter.post("/register", async (request, response) => {
   const { username, password, email } = request.body;
