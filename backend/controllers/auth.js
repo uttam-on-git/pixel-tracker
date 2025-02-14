@@ -51,7 +51,11 @@ authRouter.post(
   }
 );
 
-authRouter.get("/google", passport.authenticate("google", { 
+authRouter.get("/google", (request, response, next) => {
+  console.log("Redirecting to Google OAuth...");
+  console.log("Redirect URI:", config.callBackURL);
+  next();
+}, passport.authenticate("google", { 
   scope: ["profile", "email", "https://www.googleapis.com/auth/gmail.send"],
   accessType: "offline",
   prompt: "consent"
