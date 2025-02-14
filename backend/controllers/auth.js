@@ -67,28 +67,6 @@ authRouter.get(
   "/google/callback",
   passport.authenticate("google", { failureRedirect: config.FRONTEND_URL }),
    async (request, response) => {
-    if (!request.user || !request.user.emails || request.user.emails.length === 0) {
-      console.error("Google OAuth Error: No email received from Google");
-      return response.status(400).json({ error: "Google did not return an email." });
-    }
-    const { id, displayName, emails } = request.user;
-    const email = emails[0].value
-    const tokens = request.authInfo
-
-    await client.user.upsert({
-      where: { googleId: id },
-      update: {
-        accessToken: tokens.accessToken,
-        refreshToken: tokens.refreshToken
-      },
-      create: {
-        username: displayName,
-        email: email,
-        googleId: id,
-        accessToken: tokens.accessToken,
-        refreshToken: tokens.refreshToken
-      },
-    });
     response.redirect('/dashboard')
   }
 );
