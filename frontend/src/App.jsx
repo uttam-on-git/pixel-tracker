@@ -17,6 +17,7 @@ function App() {
 
   useEffect(()=> {
     fetch(`${API_BASE_URL}/auth/session`,  {
+      method: 'GET',
       credentials: "include",
     })
       .then((res) => res.json())

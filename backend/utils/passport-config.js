@@ -47,6 +47,10 @@ passport.use(
       callbackURL: config.callBackURL,
     },
     async (accessToken, refreshToken, profile, done) => {
+      console.log("Google Profile:", profile); 
+      if (!profile.emails || profile.emails.length === 0) {
+        return done(new Error("No email found in Google profile"));
+      }
       try {
         let user = await client.user.findUnique({
           where: { googleId: profile.id },

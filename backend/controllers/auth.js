@@ -33,6 +33,7 @@ authRouter.post("/register", async (request, response) => {
 });
 
 authRouter.get("/session", (request, response) => {
+  console.log("User session:", request.user);
   if (request.isAuthenticated()) {
     response.json({ user: request.user });
   } else {
@@ -66,6 +67,10 @@ authRouter.get(
   "/google/callback",
   passport.authenticate("google", { failureRedirect: config.FRONTEND_URL }),
    async (request, response) => {
+    if (!request.user || !request.user.emails || request.user.emails.length === 0) {
+      console.error("Google OAuth Error: No email received from Google");
+      return response.status(400).json({ error: "Google did not return an email." });
+    }
     const { id, displayName, emails } = request.user;
     const email = emails[0].value
     const tokens = request.authInfo
