@@ -28,6 +28,7 @@ app.use(
 );
 app.use(express.json());
 app.use(cookieParser());
+app.use(express.urlencoded({ extended: true }));
 app.use(
   session({
     store: new PGStore({
@@ -39,7 +40,7 @@ app.use(
     secret: config.SESSIONSECRET,
     resave: false,
     saveUninitialized: false,
-    cookie: { secure: true, httpOnly: true, maxAge: 24 * 60 * 60 * 1000 },
+    cookie: { secure: false, httpOnly: true, maxAge: 24 * 60 * 60 * 1000 },
   })
 );
 app.use(passport.initialize());

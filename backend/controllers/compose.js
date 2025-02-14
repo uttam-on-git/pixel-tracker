@@ -9,7 +9,7 @@ import { google } from "googleapis";
 composeRouter.post("/", async (request, response) => {
   const { recipient, subject, body } = request.body;
   const user = request.user;
-  if (!user.email || !user || !user.accessToken || !user.refreshToken) {
+  if (!user || !user.email || !user.accessToken || !user.refreshToken) {
     return response
       .status(400)
       .json({ error: "User not authenticated or Gmail not linked" });

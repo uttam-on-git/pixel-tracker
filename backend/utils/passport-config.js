@@ -45,8 +45,9 @@ passport.use(
       clientID: config.clientId,
       clientSecret: config.clientSecret,
       callbackURL: config.callBackURL,
+      passReqToCallback: true,
     },
-    async (accessToken, refreshToken, profile, done) => {
+    async (request, accessToken, refreshToken, profile, done) => {
       console.log("Google Profile:", profile); 
       if (!profile.emails || profile.emails.length === 0) {
         return done(new Error("No email found in Google profile"));
@@ -58,11 +59,12 @@ passport.use(
         if (!user) {
           user = await client.user.upsert({
             where: { email: profile.emails[0].value },
-            update: {},
+            update: { refreshToken },
             create: {
               email: profile.emails[0].value,
               username: profile.displayName,
               googleId: profile.id,
+              refreshToken
             },
           });
         }
@@ -78,6 +80,7 @@ passport.serializeUser((user, done) => {
   done(null, user.id);
 });
 passport.deserializeUser(async (id, done) => {
+  console.log("Deserializing user with ID:", id);
   try {
     const user = await client.user.findUnique({ where: { id } });
     done(null, user);
