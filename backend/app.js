@@ -40,9 +40,13 @@ app.use(
     secret: config.SESSIONSECRET,
     resave: false,
     saveUninitialized: false,
-    cookie: { secure: false, httpOnly: true, maxAge: 24 * 60 * 60 * 1000 },
-    httpOnly: true,
-    sameSite: "lax",
+    cookie: { 
+      secure: process.env.NODE_ENV === "production", 
+      httpOnly: true,
+      httpOnly: true,
+      sameSite: "lax", 
+      maxAge: 24 * 60 * 60 * 1000,
+    },
   })
 );
 app.use(passport.initialize());

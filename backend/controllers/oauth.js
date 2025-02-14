@@ -29,14 +29,14 @@ oauthRouter.get("/callback", async (request, response) => {
   }
   const { tokens }  = oAuth2Client.getToken(code);
   await client.user.update({
-    where: { id: req.user.id },
+    where: { id: request.user.id },
     data: {
       accessToken: tokens.access_token,
       refreshToken: tokens.refresh_token,
     },
   });
 
-  res.redirect("/dashboard");
+  response.redirect(config.FRONTEND_URL);
 });
 
 export default oauthRouter;

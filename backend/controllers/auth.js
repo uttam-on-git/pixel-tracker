@@ -33,7 +33,8 @@ authRouter.post("/register", async (request, response) => {
 });
 
 authRouter.get("/session", (request, response) => {
-  console.log("User session:", request.user);
+  console.log("Session Data:", request.session);
+  console.log("User in Request:", request.user);
   if (request.isAuthenticated()) {
     response.json({ user: request.user });
   } else {
@@ -67,7 +68,10 @@ authRouter.get(
   "/google/callback",
   passport.authenticate("google", { failureRedirect: `${config.FRONTEND_URL}/login` }),
    async (request, response) => {
-    response.redirect(config.FRONTEND_URL)
+    request.login(request.user, (err) => {
+      if (err) return response.status(500).json({ error: "Session error" });
+      response.redirect(config.FRONTEND);
+    });
   }
 );
 
