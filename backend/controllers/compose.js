@@ -7,8 +7,12 @@ import config from "../utils/config.js";
 import { google } from "googleapis";
 
 composeRouter.post("/", async (request, response) => {
+  console.log("User in request when composing email:", request.user); 
   const { recipient, subject, body } = request.body;
   const user = request.user;
+  console.log("User Data in Request:", user);
+ console.log("Using Refresh Token:", user.refreshToken);
+ console.log("Using Access Token:", user.accessToken);
   if (!user || !user.email || !user.accessToken || !user.refreshToken) {
     return response
       .status(400)
@@ -35,9 +39,10 @@ composeRouter.post("/", async (request, response) => {
     const emailBody = `${body}<br/><img src="${trackingPixelUrl}" width="1" height="1" style="display:none;" />`;
 
     const oAuth2Client = new google.auth.OAuth2(
-      (config.clientId, config.clientSecret, config.callBackURL)
+      config.clientId, 
+      config.clientSecret,
+      config.callBackURL
     );
-
     oAuth2Client.setCredentials({
       refresh_token: user.refreshToken,
     });
@@ -50,7 +55,7 @@ composeRouter.post("/", async (request, response) => {
         user: user.email,
         clientId: config.clientId,
         clientSecret: config.clientSecret,
-        refreshToken: config.REFRESH_TOKEN,
+        refreshToken: user.refreshToken,
         accessToken: accessToken.token,
       },
     });
@@ -64,7 +69,7 @@ composeRouter.post("/", async (request, response) => {
     transporter.sendMail(mailOptions, (error, info) => {
       if (error) {
         console.error("Error sending email:", error);
-        return res.status(500).json({ error: "Error sending email" });
+        return response.status(500).json({ error: "Error sending email" });
       }
       response.json({ message: "Email sent successfully", tracker });
     });

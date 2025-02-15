@@ -26,10 +26,11 @@ authRouter.post("/register", async (request, response) => {
 });
 
 authRouter.get("/session", (request, response) => {
-  console.log("Session Data:", request.session);
-  console.log("User in Request:", request.user);
-  if (request.isAuthenticated()) {
-    response.json({ user: request.user });
+  if (request.isAuthenticated() && request.user) {
+    response.json({ 
+      email: request.user.email,
+      username: request.user.username 
+    });
   } else {
     response.status(401).json({ error: "Not authenticated" });
   }
@@ -46,11 +47,7 @@ authRouter.post(
   }
 );
 
-authRouter.get("/google", (request, response, next) => {
-  console.log("Redirecting to Google OAuth...");
-  console.log("Redirect URI:", config.callBackURL);
-  next();
-}, passport.authenticate("google", { 
+authRouter.get("/google", passport.authenticate("google", { 
   scope: ["profile", "email", "https://www.googleapis.com/auth/gmail.send"],
   accessType: "offline",
   prompt: "consent"
@@ -59,11 +56,20 @@ authRouter.get("/google", (request, response, next) => {
 
 authRouter.get(
   "/google/callback",
-  passport.authenticate("google", { failureRedirect: `${config.FRONTEND_URL}/login` }),
+  passport.authenticate("google", { 
+    failureRedirect: `${config.FRONTEND_URL}/login`,
+    failureMessage: true
+   }),
    async (request, response) => {
-    request.login(request.user, (err) => {
-      if (err) return response.status(500).json({ error: "Session error" });
-      response.redirect(config.FRONTEND);
+    if (!request.user) {
+      return response.status(401).json({ error: "User not authenticated" });
+    }
+    request.login(request.user, (error) => {
+      if (error){
+        return response.status(500).json({ error: "Session error" });
+      }
+      console.log("Redirecting to:", config.FRONTEND_URL);
+      response.redirect(config.FRONTEND_URL);
     });
   }
 );

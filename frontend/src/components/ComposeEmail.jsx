@@ -37,6 +37,7 @@ const ComposeEmail = () => {
   return (
     <div>
       <h1>Compose Email</h1>
+      {message && <p style={{ color: "red" }}>{message}</p>}
       <form onSubmit={handleCompose}>
         <div>
           <label>Recipient: </label>

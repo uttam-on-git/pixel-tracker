@@ -22,7 +22,10 @@ function App() {
     })
       .then((res) => res.json())
       .then((data) => {
-        if (data.user) setUser(data.user);
+        if (data) {
+          console.log(data)
+          setUser(data);
+        }
       })
       .catch((error) => console.log(error));
   }, [])
@@ -32,15 +35,12 @@ function App() {
       const response = await fetch(`${API_BASE_URL}/auth/logout`, {
         credentials: "include",
       });
-  
       if (!response.ok) throw new Error("Logout failed");
-  
       setUser(null);
     } catch (error) {
       console.error(error.message);
     }
   };
-
   return (
     <Router>
       <nav style={{ padding: "10px", borderBottom: "1px solid #ccc" }}>
@@ -57,7 +57,6 @@ function App() {
         </>
       )}
       </nav>
-
       <div>
         <Routes>
           <Route
@@ -80,5 +79,4 @@ function App() {
     </Router>
   );
 }
-
 export default App;

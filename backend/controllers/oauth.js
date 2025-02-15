@@ -27,7 +27,7 @@ oauthRouter.get("/callback", async (request, response) => {
   if (!code) {
     return response.status(400).json({ error: "No code provided" });
   }
-  const { tokens }  = oAuth2Client.getToken(code);
+  const { tokens }  = await oAuth2Client.getToken(code);
   await client.user.update({
     where: { id: request.user.id },
     data: {

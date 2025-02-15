@@ -8,8 +8,6 @@ const Login = ({ setUser }) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const navigate = useNavigate();
-  console.log("API Base URL:", API_BASE_URL);
-
 
   const handleLogin = async (e) => {
     e.preventDefault();
