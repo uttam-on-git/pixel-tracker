@@ -15,20 +15,20 @@ import API_BASE_URL from "./config";
 function App() {
   const [user, setUser] = useState(null);
 
-  useEffect(()=> {
-    fetch(`${API_BASE_URL}/auth/session`,  {
-      method: 'GET',
+  useEffect(() => {
+    fetch(`${API_BASE_URL}/auth/session`, {
+      method: "GET",
       credentials: "include",
     })
       .then((res) => res.json())
       .then((data) => {
         if (data) {
-          console.log(data)
+          console.log(data);
           setUser(data);
         }
       })
       .catch((error) => console.log(error));
-  }, [])
+  }, []);
 
   const handleLogout = async () => {
     try {
@@ -41,21 +41,47 @@ function App() {
       console.error(error.message);
     }
   };
+  const handleDisconnect = async () => {
+    await fetch(`${API_BASE_URL}/auth/disconnect`, {
+      method: "POST",
+      credentials: "include",
+    });
+    window.location.reload();
+  };
   return (
     <Router>
       <nav style={{ padding: "10px", borderBottom: "1px solid #ccc" }}>
-        <NavLink to="/" style={({ isActive }) => ({ color: isActive ? "blue" : "black" })}>Dashboard</NavLink> | {' '}
-          {user ? (
-        <>
-          <span style={{ marginLeft: "10px" }}>Welcome {user.username}</span>
-          <button style={{ marginLeft: "10px" }} onClick={handleLogout}>Logout</button>
-        </>
+        <NavLink
+          to="/"
+          style={({ isActive }) => ({ color: isActive ? "blue" : "black" })}
+        >
+          Dashboard
+        </NavLink>{" "}
+        |{" "}
+        {user ? (
+          <>
+            <span style={{ marginLeft: "10px" }}>Welcome {user.username}</span>
+            <button style={{ marginLeft: "10px" }} onClick={handleLogout}>
+              Logout
+            </button>
+          </>
         ) : (
-        <>
-          <NavLink to="/login" style={({ isActive }) => ({ color: isActive ? "blue" : "black" })}>Login</NavLink> | {' '}
-          <NavLink to="/register" style={({ isActive }) => ({ color: isActive ? "blue" : "black" })}>Register</NavLink>
-        </>
-      )}
+          <>
+            <NavLink
+              to="/login"
+              style={({ isActive }) => ({ color: isActive ? "blue" : "black" })}
+            >
+              Login
+            </NavLink>{" "}
+            |{" "}
+            <NavLink
+              to="/register"
+              style={({ isActive }) => ({ color: isActive ? "blue" : "black" })}
+            >
+              Register
+            </NavLink>
+          </>
+        )}
       </nav>
       <div>
         <Routes>
@@ -76,6 +102,7 @@ function App() {
           <Route path="/register" element={<Register setUser={setUser} />} />
         </Routes>
       </div>
+      <button onClick={handleDisconnect}>Disconnect Google Account</button>
     </Router>
   );
 }

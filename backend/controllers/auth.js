@@ -29,7 +29,9 @@ authRouter.get("/session", (request, response) => {
   if (request.isAuthenticated() && request.user) {
     response.json({ 
       email: request.user.email,
-      username: request.user.username 
+      username: request.user.username,
+      accessToken: request.user.accessToken,  
+      refreshToken: request.user.refreshToken 
     });
   } else {
     response.status(401).json({ error: "Not authenticated" });
@@ -46,6 +48,8 @@ authRouter.post(
     });
   }
 );
+
+
 
 authRouter.get("/google", passport.authenticate("google", { 
   scope: ["profile", "email", "https://www.googleapis.com/auth/gmail.send"],
@@ -64,6 +68,7 @@ authRouter.get(
     if (!request.user) {
       return response.status(401).json({ error: "User not authenticated" });
     }
+    console.log("User after Google login:", request.user);
     request.login(request.user, (error) => {
       if (error){
         return response.status(500).json({ error: "Session error" });

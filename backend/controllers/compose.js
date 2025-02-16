@@ -5,14 +5,15 @@ import { v4 as uuidv4 } from "uuid";
 import nodemailer from "nodemailer";
 import config from "../utils/config.js";
 import { google } from "googleapis";
+import passport from "../utils/passport-config.js";
 
-composeRouter.post("/", async (request, response) => {
-  console.log("User in request when composing email:", request.user); 
+composeRouter.post("/", passport.authenticate("session"), async (request, response) => {
+  console.log("User in request when composing email:", request.user);
   const { recipient, subject, body } = request.body;
   const user = request.user;
   console.log("User Data in Request:", user);
- console.log("Using Refresh Token:", user.refreshToken);
- console.log("Using Access Token:", user.accessToken);
+  console.log("Using Refresh Token:", user.refreshToken);
+  console.log("Using Access Token:", user.accessToken);
   if (!user || !user.email || !user.accessToken || !user.refreshToken) {
     return response
       .status(400)
@@ -39,7 +40,7 @@ composeRouter.post("/", async (request, response) => {
     const emailBody = `${body}<br/><img src="${trackingPixelUrl}" width="1" height="1" style="display:none;" />`;
 
     const oAuth2Client = new google.auth.OAuth2(
-      config.clientId, 
+      config.clientId,
       config.clientSecret,
       config.callBackURL
     );
@@ -47,7 +48,16 @@ composeRouter.post("/", async (request, response) => {
       refresh_token: user.refreshToken,
     });
 
-    const accessToken = await oAuth2Client.getAccessToken();
+    let accessToken;
+    try {
+      const { token } = await oAuth2Client.getAccessToken();
+      accessToken = token;
+    } catch (error) {
+      console.error("Token refresh failed:", error);
+      return response
+        .status(401)
+        .json({ error: "Reconnect your Google account" });
+    }
     const transporter = nodemailer.createTransport({
       service: "gmail",
       auth: {
@@ -56,7 +66,11 @@ composeRouter.post("/", async (request, response) => {
         clientId: config.clientId,
         clientSecret: config.clientSecret,
         refreshToken: user.refreshToken,
-        accessToken: accessToken.token,
+        accessToken: accessToken,
+      },
+      secure: true,
+      tls: {
+        rejectUnauthorized: false,
       },
     });
     const mailOptions = {

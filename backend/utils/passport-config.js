@@ -44,7 +44,7 @@ passport.use(
       clientSecret: config.clientSecret,
       callbackURL: config.callBackURL,
       passReqToCallback: true,
-      scope: ["profile", "email"],
+      scope: ["profile", "email", "https://www.googleapis.com/auth/gmail.send"],
     },
     async (request, accessToken, refreshToken, profile, done) => {
       try {
@@ -79,9 +79,9 @@ passport.use(
             data: { accessToken, refreshToken },
           });
         }
-        return done(null, user);
+        done(null, user);
       } catch (error) {
-        return done(error, false);
+        done(error, false);
       }
     }
   )
