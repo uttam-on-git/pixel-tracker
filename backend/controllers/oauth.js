@@ -1,4 +1,4 @@
-import express, { request, response } from "express";
+import express from "express";
 const oauthRouter = express.Router();
 import { google } from "googleapis";
 import client from "../client.js";
@@ -16,7 +16,7 @@ oauthRouter.get("/connect", (request, response) => {
   }
   const authUrl = oAuth2Client.generateAuthUrl({
     access_type: "offline",
-    scope: ["https://www.googleapis.com/auth/gmail.send"],
+    scope: ["https://mail.google.com/"],
     prompt: "consent",
   });
   response.redirect(authUrl);
@@ -27,7 +27,8 @@ oauthRouter.get("/callback", async (request, response) => {
   if (!code) {
     return response.status(400).json({ error: "No code provided" });
   }
-  const { tokens }  = await oAuth2Client.getToken(code);
+  const { tokens }  =  await oAuth2Client.getToken(code);
+  console.log("New Tokens Received:", tokens);
   await client.user.update({
     where: { id: request.user.id },
     data: {

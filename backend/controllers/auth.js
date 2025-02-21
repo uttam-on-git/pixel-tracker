@@ -52,7 +52,7 @@ authRouter.post(
 
 
 authRouter.get("/google", passport.authenticate("google", { 
-  scope: ["profile", "email", "https://www.googleapis.com/auth/gmail.send"],
+  scope: ["profile", "email", "https://mail.google.com/"],
   accessType: "offline",
   prompt: "consent"
 })

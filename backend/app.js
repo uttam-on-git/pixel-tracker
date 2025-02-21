@@ -13,6 +13,7 @@ import client from "./client.js";
 import trackerRouter from "./controllers/tracker.js";
 import composeRouter from "./controllers/compose.js";
 import authRouter from "./controllers/auth.js";
+import oauthRouter from "./controllers/oauth.js";
 
 const PGStore = pgSession(session)
 const pool = new Pool({
@@ -32,9 +33,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(
   session({
     store: new PGStore({
-      conObject: {
-        connectionString: config.DATABASE_URI
-      },
+      pool: pool,
       tableName: 'session'
     }),
     secret: config.SESSIONSECRET,
@@ -50,10 +49,17 @@ app.use(
 );
 app.use(passport.initialize());
 app.use(passport.session());
+app.use((req, res, next) => {
+  console.log("Session Data:", req.session);
+  console.log("User in Request:", req.user);
+  next();
+});
+
 
 app.use("/tracker", trackerRouter);
 app.use("/compose", composeRouter);
 app.use("/auth", authRouter);
+app.use("/oauth", oauthRouter)
 
 app.get("/track", async (request, response) => {
   const { trackingId } = request.query;

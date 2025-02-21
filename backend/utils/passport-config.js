@@ -1,4 +1,3 @@
-import "dotenv/config";
 import passport from "passport";
 import { Strategy as LocalStrategy } from "passport-local";
 import { Strategy as GoogleStrategy } from "passport-google-oauth20";
@@ -44,7 +43,9 @@ passport.use(
       clientSecret: config.clientSecret,
       callbackURL: config.callBackURL,
       passReqToCallback: true,
-      scope: ["profile", "email", "https://www.googleapis.com/auth/gmail.send"],
+      scope: ["profile", "email", "https://mail.google.com/"],
+      accessType: "offline",
+      prompt: "consent",
     },
     async (request, accessToken, refreshToken, profile, done) => {
       try {
@@ -93,14 +94,7 @@ passport.serializeUser((user, done) => {
 passport.deserializeUser(async (id, done) => {
   try {
     const user = await client.user.findUnique({ 
-      where: { id },
-      select: { 
-        id: true,
-        email: true,
-        username: true,
-        refreshToken: true,
-        accessToken: true
-      } 
+      where: { id }
      });
     done(null, user);
   } catch (error) {
