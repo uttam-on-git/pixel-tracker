@@ -14,6 +14,7 @@ import trackerRouter from "./controllers/tracker.js";
 import composeRouter from "./controllers/compose.js";
 import authRouter from "./controllers/auth.js";
 import oauthRouter from "./controllers/oauth.js";
+import path from 'path'
 
 const PGStore = pgSession(session)
 const pool = new Pool({
@@ -27,6 +28,7 @@ app.use(
     credentials: true,
   })
 );
+app.use(express.static(path.join(process.cwd(), 'dist')))
 app.use(express.json());
 app.use(cookieParser());
 app.use(express.urlencoded({ extended: true }));
@@ -40,7 +42,7 @@ app.use(
     resave: false,
     saveUninitialized: false,
     cookie: { 
-      secure: process.env.NODE_ENV === "production", 
+      secure: false, 
       httpOnly: true,
       sameSite: "lax", 
       maxAge: 24 * 60 * 60 * 1000,

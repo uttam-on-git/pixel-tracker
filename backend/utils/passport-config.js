@@ -89,6 +89,7 @@ passport.use(
 );
 
 passport.serializeUser((user, done) => {
+  console.log("Serializing user:", user.id);
   done(null, user.id);
 });
 passport.deserializeUser(async (id, done) => {
@@ -96,8 +97,10 @@ passport.deserializeUser(async (id, done) => {
     const user = await client.user.findUnique({ 
       where: { id }
      });
+    console.log("Deserializing user:", user);
     done(null, user);
   } catch (error) {
+    console.error("Error deserializing user:", error);
     done(error, null);
   }
 });
