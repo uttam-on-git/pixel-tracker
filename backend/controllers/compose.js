@@ -66,7 +66,7 @@ composeRouter.post(
           status: "sent",
         },
       });
-      const trackingPixelUrl = `${config.BACKEND_URL.replace(/\/$/, '')}/track?trackingId=${trackingId}`;
+      const trackingPixelUrl = `${config.BACKEND_URL}/track?trackingId=${trackingId}`;
       const emailBody = `${body}<br/><img src="${trackingPixelUrl}" width="1" height="1" style="display:none;" />`;
 
       const transporter = nodemailer.createTransport({
