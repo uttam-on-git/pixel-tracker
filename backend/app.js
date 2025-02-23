@@ -26,6 +26,8 @@ app.use(
   cors({
     origin: config.FRONTEND_URL,
     credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization']
   })
 );
 app.use(express.static(path.join(process.cwd(), 'dist')))
@@ -44,8 +46,8 @@ app.use(
     cookie: { 
       secure: process.env.NODE_ENV === "production", 
       httpOnly: true,
-      sameSite: "none", 
-      domain: process.env.COOKIE_DOMAIN || undefined,
+      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax", 
+      domain: process.env.NODE_ENV === "production" ? process.env.COOKIE_DOMAIN : undefined,
       maxAge: 24 * 60 * 60 * 1000,
     },
   })

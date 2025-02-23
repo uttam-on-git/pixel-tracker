@@ -94,10 +94,15 @@ passport.serializeUser((user, done) => {
 });
 passport.deserializeUser(async (id, done) => {
   try {
+    console.log("🔄 Attempting to deserialize user with ID:", id);
     const user = await client.user.findUnique({ 
       where: { id }
      });
-    console.log("Deserializing user:", user);
+     if (!user) {
+      console.warn("⚠️ No user found for ID:", id);
+      return done(null, false);
+    }
+    console.log("Deserialized user:", user);
     done(null, user);
   } catch (error) {
     console.error("Error deserializing user:", error);

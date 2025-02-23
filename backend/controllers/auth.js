@@ -70,26 +70,33 @@ authRouter.get(
     failureMessage: true,
   }),
   async (request, response) => {
-    if (!request.user) {
-      return response.status(401).json({ error: "User not authenticated" });
-    }
-    console.log("User after Google login:", request.user);
-    request.login(request.user, (error) => {
-      if (error) {
-        return response.status(500).json({ error: "Session error" });
+    try {
+      if (!request.user) {
+        console.error("No user data in request");
+        return response.status(401).json({ error: "Authentication failed" });
       }
-      request.session.save((err) => {
-        if (err) {
-          console.error("Session save error:", err);
-          return response.status(500).json({ error: "Session storage failed" });
-        }
-        console.log("Session saved successfully! Redirecting...");
-        response.redirect(config.FRONTEND_URL);
+
+      await new Promise((resolve, reject) => {
+        request.login(request.user, (error) => {
+          if (error) reject(error);
+          resolve();
+        });
       });
-    });
+
+      await new Promise((resolve, reject) => {
+        request.session.save((err) => {
+          if (err) reject(err);
+          resolve();
+        });
+      });
+
+      response.redirect(config.FRONTEND_URL);
+    } catch (error) {
+      console.error("Authentication error:", error);
+      response.status(500).json({ error: "Authentication failed" });
+    }
   }
 );
-
 authRouter.get("/logout", (request, response, next) => {
   request.logout((err) => {
     if (err) return next(err);
