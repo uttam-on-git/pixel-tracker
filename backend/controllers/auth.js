@@ -27,11 +27,11 @@ authRouter.post("/register", async (request, response) => {
 
 authRouter.get("/session", (request, response) => {
   if (request.isAuthenticated() && request.user) {
-    response.json({ 
+    response.json({
       email: request.user.email,
       username: request.user.username,
-      accessToken: request.user.accessToken,  
-      refreshToken: request.user.refreshToken 
+      accessToken: request.user.accessToken,
+      refreshToken: request.user.refreshToken,
     });
   } else {
     response.status(401).json({ error: "Not authenticated" });
@@ -49,28 +49,33 @@ authRouter.post(
   }
 );
 
-
-
-authRouter.get("/google", passport.authenticate("google", { 
-  scope: ["profile", "email", "https://mail.google.com/"],
-  accessType: "offline",
-  prompt: "consent"
-})
-);
+authRouter.get("/google", (req, res, next) => {
+  req.session.save((err) => {
+    if (err) {
+      console.error("Session save error:", err);
+      return res.status(500).json({ error: "Session could not be saved" });
+    }
+    passport.authenticate("google", {
+      scope: ["profile", "email", "https://mail.google.com/"],
+      accessType: "offline",
+      prompt: "consent",
+    })(req, res, next);
+  });
+});
 
 authRouter.get(
   "/google/callback",
-  passport.authenticate("google", { 
+  passport.authenticate("google", {
     failureRedirect: `${config.FRONTEND_URL}/login`,
-    failureMessage: true
-   }),
-   async (request, response) => {
+    failureMessage: true,
+  }),
+  async (request, response) => {
     if (!request.user) {
       return response.status(401).json({ error: "User not authenticated" });
     }
     console.log("User after Google login:", request.user);
     request.login(request.user, (error) => {
-      if (error){
+      if (error) {
         return response.status(500).json({ error: "Session error" });
       }
       request.session.save((err) => {
