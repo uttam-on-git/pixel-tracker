@@ -73,8 +73,14 @@ authRouter.get(
       if (error){
         return response.status(500).json({ error: "Session error" });
       }
-      console.log("Redirecting to:", config.FRONTEND_URL);
-      response.redirect(config.FRONTEND_URL);
+      request.session.save((err) => {
+        if (err) {
+          console.error("Session save error:", err);
+          return response.status(500).json({ error: "Session storage failed" });
+        }
+        console.log("Session saved successfully! Redirecting...");
+        response.redirect(config.FRONTEND_URL);
+      });
     });
   }
 );
